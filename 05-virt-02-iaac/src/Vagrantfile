@@ -1,5 +1,5 @@
 ##Обратите внимание!! Скрипт установки docker рассчитан на ubuntu-20.04
-ISO = "bento/ubuntu-20.04"
+ISO = "ubuntu/focal64"
 NET = "192.168.56."
 DOMAIN = ".netology"
 HOST_PREFIX = "server"
@@ -42,10 +42,11 @@ Vagrant.configure(2) do |config|
           "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
           $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
           sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        
+
         sudo apt-get update
-        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin  
       EOF
+        
     end
   end
 end
