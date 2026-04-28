@@ -280,13 +280,52 @@ services:
 
 В качестве ответа приложите скриншоты консоли, где видно все введенные команды и их вывод, файл compose.yaml , скриншот portainer c задеплоенным компоузом.
 
+**Выполнение:** 
+1. Создал отдельную директорию и 2 файла внутри него согласно задания. 
+  ![Скрин файлы](img/img29.png) 
 
+И выполнил команду "docker compose up -d". 
+  ![Скрин команды docker compose up](img/img30.png) 
+
+Как видно из скрина команда запустила файл compose.yaml. Согласно документаций путь по умолчанию для файла Compose - это compose.yaml(предпочтительно) или compose.yml. Также поддерживает docker-compose.yaml и docker-compose.yml. Если оба файла существуют, Compose выберет compose.yaml(yml).
+
+2. Отредактировал файл compose.yaml так, чтобы были запущенны оба файла. 
+```
+version: "3"
+include:
+  - docker-compose.yaml
+services:
+  portainer:
+    network_mode: host
+    image: portainer/portainer-ce:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+  Выполнил команду "docker compose up -d". 
+  ![Скрин команды docker compose up (2)](img/img31.png) 
+
+3. Залил образ custom-nginx как custom-nginx:latest в запущенное локальное registry. Тэг latest можно было не указывать, он бы применился по умолчанию. 
+```
+docker tag tukay72/custom-nginx:1.0.0 localhost:5000/custom-nginx:latest
+docker push localhost:5000/custom-nginx:latest
+``` 
+  ![Скрин команды docker tag и push](img/img32.png) 
+
+4. На странице "https://127.0.0.1:9000" и произвёл начальную настройку portainer.  
+  ![Скрин настройки](img/img33.png) 
+
+5. Открыл страницу "http://127.0.0.1:9000/#!/home", выбрал local окружение. Во вкладке "stacks" в "web editor" задеплойл предлагаемый компоуз.  
+  ![Скрин stacks list](img/img34.png) 
+
+6. На странице "http://127.0.0.1:9000/#!/2/docker/containers", выбрал контейнер с nginx и нажал на кнопку "inspect".  
+  ![Скрин inspect](img/img35.png) 
+
+7. Удалил файл compose.yaml. Выполнил команду "docker compose up -d".  
+  ![Скрин docker compose up -d](img/img36.png) 
+  Мы видим предупреждение ```Found orphan containers ([task5-portainer-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up```. Предупреждает что найдены контейнеры которые не описаны в проекте. Предлагает выполнить команду с флагом ```--remove-orphans``` для удаления. Далее погасил compose-проект командой ```docker compose down```.  
+  ![Скрин docker compose up -d --remove-orphans](img/img37.png)
+ 
 
 
 ---
-
-### Правила приема
-
-Домашнее задание выполните в файле readme.md в GitHub-репозитории. В личном кабинете отправьте на проверку ссылку на .md-файл в вашем репозитории.
-
 
