@@ -15,4 +15,4 @@ ENTRYPOINT python -u /app.py
 # В другом терминале:
 # docker exec test_shell ps aux
 
-# time docker stop test_shell
+# time docker stop test_shell 
