@@ -1,0 +1,10 @@
+[nodes:children]
+manager
+worker
+
+[manager]
+93.77.180.81 ansible_user=ubuntu
+
+[worker]
+62.84.124.63 ansible_user=ubuntu
+51.250.83.126 ansible_user=ubuntu
