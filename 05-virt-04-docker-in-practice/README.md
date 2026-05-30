@@ -68,103 +68,22 @@ See 'snap info docker' for additional versions.
 
 - ```db```. image=mysql:8. Контейнер должен работать в bridge-сети с названием ```backend``` и иметь фиксированный ipv4-адрес ```172.20.0.10```. Явно перезапуск сервиса в случае ошибок. Передайте необходимые ENV-переменные для создания: пароля root пользователя, создания базы данных, пользователя и пароля для web-приложения.Обязательно используйте уже существующий .env file для назначения секретных ENV-переменных!
 
-2. Запустите проект локально с помощью docker compose , добейтесь его стабильной работы: команда ``````curl -L http://127.0.0.1:8090 должна возвращать в качестве ответа время и локальный IP-адрес. Если сервисы не стартуют воспользуйтесь командами: ```docker ps -a ``` и ```docker logs <container_name>``` . Если вместо IP-адреса вы получаете информационную ошибку --убедитесь, что вы шлете запрос на порт ```8090```, а не 5000.
+2. Запустите проект локально с помощью docker compose , добейтесь его стабильной работы: команда ```curl -L http://127.0.0.1:8090``` должна возвращать в качестве ответа время и локальный IP-адрес. Если сервисы не стартуют воспользуйтесь командами: ```docker ps -a ``` и ```docker logs <container_name>``` . Если вместо IP-адреса вы получаете информационную ошибку --убедитесь, что вы шлете запрос на порт ```8090```, а не 5000.
 
-5. Подключитесь к БД mysql с помощью команды ```docker exec -ti <имя_контейнера> mysql -uroot -p<пароль root-пользователя>```(обратите внимание что между ключем -u и логином root нет пробела. это важно!!! тоже самое с паролем) . Введите последовательно команды (не забываем в конце символ ; ): ```exit use <имя вашей базы данных(по-умолчанию virtd, как это указано в .env)>; show tables; SELECT * from requests LIMIT 10;```. Примечание: таблица в БД создается после первого поступившего запроса к приложению.
+5. Подключитесь к БД mysql с помощью команды ```docker exec -ti <имя_контейнера> mysql -uroot -p<пароль root-пользователя>```(обратите внимание что между ключем -u и логином root нет пробела. это важно!!! тоже самое с паролем) . Введите последовательно команды (не забываем в конце символ ; ): ```show databases; use <имя вашей базы данных(по-умолчанию virtd, как это указано в .env)>;  show tables; SELECT * from requests LIMIT 10;```. Примечание: таблица в БД создается после первого поступившего запроса к приложению.
 
 6. Остановите проект. В качестве ответа приложите скриншот sql-запроса.
 
 **Выполнение:**  
-  Создал в репозитории с проектом файл ```compose.yaml```. С помощью директивы "include" подключил к нему файл "proxy.yaml". Запустил проект локально с помощью docker compose. В ответ на команду ```curl -L http://127.0.0.1:8090``` получаю ошибку ```curl: (7) Failed to connect to 127.0.0.1 port 8090 after 0 ms: Could not connect to server```. Никак не могу добиться роботоспособности.  
-   ![Скрин 1](img/img3.png)
-   ![Скрин 2](img/img4.png)
-   ![Скрин 3](img/img5.png)
+  Создал в репозитории с проектом файл ```compose.yaml```. С помощью директивы "include" подключил к нему файл "proxy.yaml". Запустил проект локально с помощью docker compose. В ответ на команду ```curl -L http://127.0.0.1:8090``` получаю ответ:    
+   ![Скрин 1](img/img3.png)  
 
-   Результат ```docker logs web```:
-   ```
-   Traceback (most recent call last):
-  File "/app/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 426, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1106, in __call__
-    await super().__call__(scope, receive, send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/applications.py", line 122, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 184, in __call__
-    raise exc
-  File "/app/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 162, in __call__
-    await self.app(scope, receive, _send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
-    raise exc
-  File "/app/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
-    await self.app(scope, receive, sender)
-  File "/app/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
-    raise e
-  File "/app/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
-    await self.app(scope, receive, send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/routing.py", line 718, in __call__
-    await route.handle(scope, receive, send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/routing.py", line 276, in handle
-    await self.app(scope, receive, send)
-  File "/app/venv/lib/python3.12/site-packages/starlette/routing.py", line 66, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/fastapi/routing.py", line 274, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/fastapi/routing.py", line 193, in run_endpoint_function
-    return await run_in_threadpool(dependant.call, **values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/starlette/concurrency.py", line 41, in run_in_threadpool
-    return await anyio.to_thread.run_sync(func, *args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/anyio/to_thread.py", line 33, in run_sync
-    return await get_asynclib().run_sync_in_worker_thread(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 877, in run_sync_in_worker_thread
-    return await future
-           ^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 807, in run
-    result = context.run(func, *args)
-             ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/main.py", line 103, in index
-    with get_db_connection() as db:
-         ^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.12/contextlib.py", line 137, in __enter__
-    return next(self.gen)
-           ^^^^^^^^^^^^^^
-  File "/app/main.py", line 46, in get_db_connection
-    db = mysql.connector.connect(
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/mysql/connector/pooling.py", line 293, in connect
-    return CMySQLConnection(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/venv/lib/python3.12/site-packages/mysql/connector/connection_cext.py", line 129, in __init__
-    self.connect(**kwargs)
-  File "/app/venv/lib/python3.12/site-packages/mysql/connector/abstracts.py", line 1237, in connect
-    self._open_connection()
-  File "/app/venv/lib/python3.12/site-packages/mysql/connector/connection_cext.py", line 313, in _open_connection
-    raise get_mysql_exception(
-mysql.connector.errors.DatabaseError: 2003 (HY000): Can't connect to MySQL server on '127.20.0.10:3306' (111)
+  Подключился к базе данных mysql с помощью команды ```docker exec -ti db mysql -uroot -p<пароль root-пользователя>```. Последовательно выполнил команды: ```show databases; use virtd;  show tables; SELECT * from requests LIMIT 10;```.  
+   ![Скрин 2](img/img4.png)  
 
-What's next:
-    View and search logs for all containers in one place
-    with Docker Desktop's Logs view. docker-desktop://dashboard/logs
-   ```
+  Остановил проект командой ``` docker compose down```.  
+   ![Скрин 3](img/img5.png)  
 
-  Результат ```docker logs db```:  
-   ![Скрин 4](img/img6.png)
-
-  Результат ```docker logs shvirtd-example-python-ingress-proxy-1```:  
-   ![Скрин 5](img/img7.png)
-  
-  Результат ```docker logs shvirtd-example-python-reverse-proxy-1```:  
-   ![Скрин 6](img/img8.png)
-  
- Подскажите что я делаю не так, где можно почитать?
 
 ## Задача 4
 1. Запустите в Yandex Cloud ВМ (вам хватит 2 Гб Ram).
@@ -173,6 +92,29 @@ What's next:
 4. Зайдите на сайт проверки http подключений, например(или аналогичный): ```https://check-host.net/check-http``` и запустите проверку вашего сервиса ```http://<внешний_IP-адрес_вашей_ВМ>:8090```. Таким образом трафик будет направлен в ingress-proxy. Трафик должен пройти через цепочки: Пользователь → Internet → Nginx → HAProxy → FastAPI(запись в БД) → HAProxy → Nginx → Internet → Пользователь
 5. (Необязательная часть) Дополнительно настройте remote ssh context к вашему серверу. Отобразите список контекстов и результат удаленного выполнения ```docker ps -a```
 6. Повторите SQL-запрос на сервере и приложите скриншот и ссылку на fork.
+
+**Выполнение:**  
+ Запустил в Yandex Cloud ВМ, установил docker. Написал bash-скрипт, который скачает мой fork-репозиторий в каталог /opt и запустит проект целиком. Запустил скрипт. 
+```
+#!/bin/bash
+
+sudo apt update
+sudo apt install git -y
+cd /opt
+sudo git clone https://github.com/AyratTukay/shvirtd-example-python.git
+cd shvirtd-example-python
+sudo docker compose up -d
+```
+   ![Скрин 4](img/img6.png) 
+   ![Скрин 5](img/img7.png) 
+   ![Скрин 6](img/img8.png) 
+
+  Зашёл на сайт проверки http подключений: ```https://check-host.net/check-http``` и запустил проверку сервиса ```http://111.88.158.102:8090```.  
+   ![Скрин 7](img/img9.png) 
+   ![Скрин 8](img/img10.png) 
+
+[Ссылка на репозиторий](https://github.com/AyratTukay/shvirtd-example-python.git)
+
 
 ## Задача 5 (*)
 1. Напишите и задеплойте на вашу облачную ВМ bash скрипт, который произведет резервное копирование БД mysql в директорию "/opt/backup" с помощью запуска в сети "backend" контейнера из образа ```schnitzler/mysqldump``` при помощи ```docker run ...``` команды. Подсказка: "документация образа."
@@ -184,9 +126,27 @@ What's next:
 Скачайте docker образ ```hashicorp/terraform:latest``` и скопируйте бинарный файл ```/bin/terraform``` на свою локальную машину, используя dive и docker save.
 Предоставьте скриншоты  действий .
 
+**Выполнение:**  
+```
+docker pull hashicorp/terraform:latest
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:latest hashicorp/terraform
+docker save hashicorp/terraform -o image.tar
+tar -xvf image.tar
+```
+   ![Скрин 9](img/img11.png) 
+
 ## Задача 6.1
 Добейтесь аналогичного результата, используя docker cp.  
-Предоставьте скриншоты  действий .
+Предоставьте скриншоты  действий .  
+
+**Выполнение:**  
+```
+docker pull hashicorp/terraform:latest
+docker run hashicorp/terraform:latest
+docker cp efd6d665490c:/bin/terraform ./newdir
+```
+   ![Скрин 10](img/img12.png) 
+   ![Скрин 11](img/img13.png) 
 
 ## Задача 6.2 (**)
 Предложите способ извлечь файл из контейнера, используя только команду docker build и любой Dockerfile.  
