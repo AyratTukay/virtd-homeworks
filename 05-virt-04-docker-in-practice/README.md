@@ -133,7 +133,7 @@ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:
 docker save hashicorp/terraform -o image.tar
 tar -xvf image.tar
 ```
-   ![Скрин 9](img/img11.png) 
+![Скрин 9](img/img11.png) 
 
 ## Задача 6.1
 Добейтесь аналогичного результата, используя docker cp.  
